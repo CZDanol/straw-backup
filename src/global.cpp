@@ -9,6 +9,7 @@
 
 #include "gui/mainwindow.h"
 #include "gui/backupdirectoryeditdialog.h"
+#include "gui/aboutdialog.h"
 #include "job/backupmanager.h"
 
 #include <QDebug>
@@ -26,6 +27,7 @@ void Global::init()
 
 	mainWindow = new MainWindow();
 	backupDirectoryEditDialog = new BackupDirectoryEditDialog(mainWindow);
+	aboutDialog = new AboutDialog(mainWindow);
 	trayIcon = new QSystemTrayIcon();
 	backupManager = new BackupManager();
 
@@ -33,11 +35,14 @@ void Global::init()
 		trayIcon->setIcon(QIcon(":/16/icons8_Database_16px.png"));
 		trayIcon->setToolTip(tr("Straw Backup"));
 		connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayIconActivated(QSystemTrayIcon::ActivationReason)));
+		connect(backupManager, SIGNAL(logError(QString)), this, SLOT(onLogError()));
 	}
 
 	mainWindow->init();
 
 	trayIcon->show();
+
+	QMetaObject::invokeMethod(backupManager, "checkForBackups");
 }
 
 void Global::uninit()
@@ -107,4 +112,10 @@ void Global::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
 	if(reason == QSystemTrayIcon::Context || reason == QSystemTrayIcon::DoubleClick)
 		mainWindow->show();
+}
+
+void Global::onLogError()
+{
+	if(!mainWindow->isVisible())
+		trayIcon->showMessage(tr("Chyba"), tr("Během zálohování nastala chyba."), QSystemTrayIcon::Critical);
 }

@@ -67,15 +67,23 @@ void BackupDirectoryEditDialog::show(int rowId)
 
 void BackupDirectoryEditDialog::on_btnOk_clicked()
 {
-	if( ui->btnSourceFolder->text().isEmpty() || !QDir(ui->btnSourceFolder->text()).exists() ) {
-		QMessageBox::critical(this, tr("Chyba"), tr("Zálovaná složka '%1' neexistuje.").arg(ui->btnSourceFolder->text()));
+	const QString sourceFolder = ui->btnSourceFolder->text();
+	const QString targetFolder = ui->btnBackupFolder->text();
+
+	if( sourceFolder.isEmpty() || !QDir(sourceFolder).exists() ) {
+		QMessageBox::critical(this, tr("Chyba"), tr("Zálovaná složka '%1' neexistuje.").arg(sourceFolder));
 		return;
 	}
 
-	if( ui->btnBackupFolder->text().isEmpty() || !QDir(ui->btnBackupFolder->text()).exists() ) {
-		QMessageBox::critical(this, tr("Chyba"), tr("Složka na zálohy '%1' neexistuje.").arg(ui->btnBackupFolder->text()));
+	if( targetFolder.isEmpty() || !QDir(targetFolder).exists() ) {
+		QMessageBox::critical(this, tr("Chyba"), tr("Složka na zálohy '%1' neexistuje.").arg(targetFolder));
 		return;
 	}
+
+	/*if( QDir::isRelativePath(QDir(sourceFolder).relativeFilePath(targetFolder)) || QDir::isRelativePath(QDir(targetFolder).relativeFilePath(sourceFolder)) ) {
+		QMessageBox::critical(this, tr("Chyba"), tr("Složka na zálohy nemůže být podsložkou zálohované složky (ani obráceně)"));
+		return;
+	}*/
 
 	if( rowId_ == -1 ) {
 		QSqlQuery q("INSERT INTO backupDirectories DEFAULT VALUES");

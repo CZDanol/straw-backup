@@ -8,6 +8,7 @@
 
 class MainWindow;
 class BackupDirectoryEditDialog;
+class AboutDialog;
 class BackupManager;
 
 class Global : public QObject
@@ -24,6 +25,7 @@ public:
 public:
 	MainWindow *mainWindow;
 	BackupDirectoryEditDialog *backupDirectoryEditDialog;
+	AboutDialog *aboutDialog;
 
 public:
 	QSystemTrayIcon *trayIcon;
@@ -38,6 +40,7 @@ private:
 
 private slots:
 	void onTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
+	void onLogError();
 
 };
 

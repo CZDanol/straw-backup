@@ -37,34 +37,6 @@
         <number>0</number>
        </property>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btnExit">
-           <property name="text">
-            <string> Ukončit program</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../../res/resources.qrc">
-             <normaloff>:/16/icons8_Door_Opened_16px.png</normaloff>:/16/icons8_Door_Opened_16px.png</iconset>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
         <widget class="QTreeView" name="tvDirList">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -75,16 +47,57 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QPushButton" name="btnDeleteBackupFolder">
-           <property name="text">
-            <string> Odstranit</string>
+          <widget class="QComboBox" name="cmbAction">
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToContents</enum>
            </property>
-           <property name="icon">
-            <iconset resource="../../res/resources.qrc">
-             <normaloff>:/16/icons8_Trash_Can_16px.png</normaloff>:/16/icons8_Trash_Can_16px.png</iconset>
-           </property>
+           <item>
+            <property name="text">
+             <string>Akce</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../../res/resources.qrc">
+              <normaloff>:/16/icons8_More_16px.png</normaloff>:/16/icons8_More_16px.png</iconset>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Odstranit</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../../res/resources.qrc">
+              <normaloff>:/16/icons8_Trash_Can_16px.png</normaloff>:/16/icons8_Trash_Can_16px.png</iconset>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Zálohovat nyní</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../../res/resources.qrc">
+              <normaloff>:/16/icons8_Data_Backup_16px.png</normaloff>:/16/icons8_Data_Backup_16px.png</iconset>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Zálohová složka</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../../res/resources.qrc">
+              <normaloff>:/16/icons8_Open_16px.png</normaloff>:/16/icons8_Open_16px.png</iconset>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Zdrojová složka</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../../res/resources.qrc">
+              <normaloff>:/16/icons8_Open_16px.png</normaloff>:/16/icons8_Open_16px.png</iconset>
+            </property>
+           </item>
           </widget>
          </item>
          <item>
@@ -95,17 +108,6 @@
            <property name="icon">
             <iconset resource="../../res/resources.qrc">
              <normaloff>:/16/icons8_Plus_16px.png</normaloff>:/16/icons8_Plus_16px.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btnBackupNow">
-           <property name="text">
-            <string>Zálohovat nyní</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../../res/resources.qrc">
-             <normaloff>:/16/icons8_Data_Backup_16px.png</normaloff>:/16/icons8_Data_Backup_16px.png</iconset>
            </property>
           </widget>
          </item>
@@ -126,6 +128,45 @@
     </item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1038</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuProgram">
+    <property name="title">
+     <string>Program</string>
+    </property>
+    <addaction name="actionAbout"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <addaction name="menuProgram"/>
+  </widget>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="../../res/resources.qrc">
+     <normaloff>:/16/icons8_Door_Opened_16px.png</normaloff>:/16/icons8_Door_Opened_16px.png</iconset>
+   </property>
+   <property name="text">
+    <string>Ukončit</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="../../res/resources.qrc">
+     <normaloff>:/16/icons8_Info_16px.png</normaloff>:/16/icons8_Info_16px.png</iconset>
+   </property>
+   <property name="text">
+    <string>O programu</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../../res/resources.qrc"/>

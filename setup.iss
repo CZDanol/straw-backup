@@ -40,12 +40,12 @@ Name: "czech"; MessagesFile: "compiler:Languages\Czech.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "autostart"; Description: "{cm:AutoStartProgram}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
 Source: "installDeps\vc2015_redist.x86.exe"; DestDir: {tmp}; AfterInstall: InstallVc2015Redist; Flags: deleteafterinstall
-Source: "bin\atisExporter.exe"; DestDir: "{app}"; Flags: ignoreversion sign
-Source: "bin\pandoc.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bin\strawBackup.exe"; DestDir: "{app}"; Flags: ignoreversion sign
 Source: "bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "bin\imageformats\*"; DestDir: "{app}\imageformats"; Flags: ignoreversion
 Source: "bin\platforms\*"; DestDir: "{app}\platforms"; Flags: ignoreversion
@@ -58,6 +58,7 @@ Source: "bin\sqldrivers\*"; DestDir: "{app}\sqldrivers"; Flags: ignoreversion
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
+Name: "{commonstartup}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks:autostart
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent

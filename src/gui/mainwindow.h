@@ -31,12 +31,11 @@ private slots:
 	void logError(QString text);
 
 private slots:
-	void on_btnExit_clicked();
 	void on_btnNewBackupFolder_clicked();
-	void on_btnDeleteBackupFolder_clicked();
 	void on_tvDirList_activated(const QModelIndex &index);
-
-	void on_btnBackupNow_clicked();
+	void on_actionExit_triggered();
+	void on_actionAbout_triggered();
+	void on_cmbAction_currentIndexChanged(int index);
 
 private:
 	Ui::MainWindow *ui;

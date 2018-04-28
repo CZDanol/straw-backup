@@ -29,19 +29,22 @@ gui/mainwindow.cpp \
 global.cpp \
 main.cpp \
     gui/backupdirectoryeditdialog.cpp \
-    job/backupmanager.cpp
+    job/backupmanager.cpp \
+    gui/aboutdialog.cpp
 
 
 HEADERS  += \
 gui/mainwindow.h \
 global.h \
     gui/backupdirectoryeditdialog.h \
-    job/backupmanager.h
+    job/backupmanager.h \
+    gui/aboutdialog.h
 
 
 FORMS    += \
 gui/mainwindow.ui \
-    gui/backupdirectoryeditdialog.ui
+    gui/backupdirectoryeditdialog.ui \
+    gui/aboutdialog.ui
 
 
 

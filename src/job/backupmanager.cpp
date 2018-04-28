@@ -8,9 +8,6 @@
 
 #include "global.h"
 
-#include <QDebug>
-#include <QSqlError>
-
 BackupManager::BackupManager()
 {
 	connect(&backupCheckTimer_, SIGNAL(timeout()), this, SLOT(checkForBackups()));
@@ -22,14 +19,12 @@ BackupManager::BackupManager()
 	thread_.start();
 	backupCheckTimer_.moveToThread(&thread_);
 	moveToThread(&thread_);
-
-	QMetaObject::invokeMethod(this, "checkForBackups");
 }
 
 void BackupManager::checkForBackups()
 {
 	qlonglong currentTime = QDateTime::currentSecsSinceEpoch();
-	QString currentTimeFileSuffix = QDateTime::fromSecsSinceEpoch(currentTime).toString("ddMMyyyy_hhmmss");
+	QString currentTimeFileSuffix = QDateTime::fromSecsSinceEpoch(currentTime).toString("yyyyMMdd_hhmmss");
 
 	QSqlQuery qDir;
 	qDir.prepare("SELECT * FROM backupDirectories WHERE IFNULL(lastFinishedBackup+backupInterval, 0) <= ?");
@@ -49,14 +44,13 @@ void BackupManager::checkForBackups()
 	QSqlQuery qUpdateFile;
 	qUpdateFile.prepare("UPDATE files SET lastChecked = :lastChecked, remoteVersion = :remoteVersion WHERE id = :id");
 	qUpdateFile.bindValue(":lastChecked", currentTime);
-	qUpdateFile.bindValue(":remoteVersion", currentTime);
 
 	QSqlQuery qCheckFile;
 	qCheckFile.prepare("UPDATE files SET lastChecked = :lastChecked WHERE id = :id");
 	qCheckFile.bindValue(":lastChecked", currentTime);
 
 	QSqlQuery qInsertHistory;
-	qInsertHistory.prepare("INSERT INTO files (backupDirectory, remoteFilePath, originalFilePath, version) VALUES (:backupDirectory, :remoteFilePath, :originalFilePath, :version)");
+	qInsertHistory.prepare("INSERT INTO history (backupDirectory, remoteFilePath, originalFilePath, version) VALUES (:backupDirectory, :remoteFilePath, :originalFilePath, :version)");
 	qInsertHistory.bindValue(":version", currentTime);
 
 	QSqlQuery qDeletedFile;
@@ -82,7 +76,6 @@ void BackupManager::checkForBackups()
 
 		const QDir sourceQDir(sourceDir);
 		const QDir remoteQDir(remoteDir);
-		qDebug() << sourceDir << remoteDir;
 
 		qFile.bindValue(":backupDirectory", dirId);
 		qInsertFile.bindValue(":backupDirectory", dirId);
@@ -111,17 +104,15 @@ void BackupManager::checkForBackups()
 			const QFileInfo fileInfo = iter.fileInfo();
 			const QString filePath = sourceQDir.relativeFilePath(fileInfo.absoluteFilePath());
 
-			const QString sourceFilePath = sourceQDir.absoluteFilePath(filePath);
-			const QString remoteFilePath = remoteQDir.absoluteFilePath(filePath);
-			const QString remotePath = QFileInfo(remoteFilePath).absolutePath();
-
-			qDebug() << filePath;
-
 			qFile.bindValue(":filePath", filePath);
 			qFile.exec();
 
 			// File is not in the database -> copy it and create record
 			if(!qFile.next()) {
+				const QString sourceFilePath = sourceQDir.absoluteFilePath(filePath);
+				const QString remoteFilePath = remoteQDir.absoluteFilePath(filePath);
+				const QString remotePath = QFileInfo(remoteFilePath).absolutePath();
+
 				emit logInfo(tr("Zálohuji nový soubor '%1'...").arg(sourceFilePath));
 				if( !QDir().mkpath(remotePath) ) {
 					emit logError(tr("Nepodařilo se vytvořit cestu '%1'!").arg(remotePath));
@@ -137,6 +128,10 @@ void BackupManager::checkForBackups()
 
 			// File in the database is older -> create a backup of it and copy a new version
 			} else if(fileInfo.lastModified().toSecsSinceEpoch() != qFile.value("remoteVersion").toLongLong()) {
+				const QString sourceFilePath = sourceQDir.absoluteFilePath(filePath);
+				const QString remoteFilePath = remoteQDir.absoluteFilePath(filePath);
+				const QString remotePath = QFileInfo(remoteFilePath).absolutePath();
+
 				emit logInfo(tr("Soubor '%1' změněn, vytvářím zálohu...").arg(sourceFilePath));
 
 				QString newFilePath = QDir(remotePath).absoluteFilePath( QString("%1.%2.%3").arg( fileInfo.completeBaseName(), currentTimeFileSuffix, fileInfo.suffix() ) );
@@ -153,6 +148,7 @@ void BackupManager::checkForBackups()
 					continue;
 
 				qUpdateFile.bindValue(":id", qFile.value("id"));
+				qUpdateFile.bindValue(":remoteVersion", fileInfo.lastModified().toSecsSinceEpoch());
 				qUpdateFile.exec();
 
 			// Otherwise just update lastChecked of the file
@@ -172,8 +168,8 @@ void BackupManager::checkForBackups()
 
 			emit logInfo(tr("Soubor '%1' smazán, vytvářím zálohu...").arg(sourceFilePath));
 
-			qDeletedFile.bindValue("id", qDeletedFile.value("id"));
-			qDeletedFile.exec();
+			qDeleteFile.bindValue(":id", qDeletedFile.value("id"));
+			qDeleteFile.exec();
 
 			QFileInfo fileInfo(remoteFilePath);
 			QString newFilePath = QDir(fileInfo.path()).absoluteFilePath( QString("%1.%2.%3").arg( fileInfo.completeBaseName(), currentTimeFileSuffix, fileInfo.suffix() ) );
@@ -193,7 +189,7 @@ void BackupManager::checkForBackups()
 		qOutdatedHistory.bindValue(":backupDirectory", dirId);
 		qOutdatedHistory.exec();
 		while(qOutdatedHistory.next()) {
-			const QString filePath = qDeletedFile.value("remoteFilePath").toString();
+			const QString filePath = qOutdatedHistory.value("remoteFilePath").toString();
 			const QString remoteFilePath = remoteQDir.absoluteFilePath(filePath);
 
 			emit logInfo(tr("Mažu starou zálohu '%1'.").arg(remoteFilePath));
@@ -220,17 +216,22 @@ void BackupManager::updateBackupCheckTimer()
 	QSqlQuery q("SELECT MIN(IFNULL(lastFinishedBackup, 0) + backupInterval) FROM backupDirectories");
 	q.next();
 
-	int diff = qMax<qlonglong>(1, q.value(0).toLongLong() - QDateTime::currentSecsSinceEpoch());
-	backupCheckTimer_.setInterval(diff * 1000);
-	backupCheckTimer_.start();
+	if( q.value(0).isNull() ) {
+		backupCheckTimer_.stop();
+	} else {
+		int diff = qMax<qlonglong>(1, q.value(0).toLongLong() - QDateTime::currentSecsSinceEpoch());
+		backupCheckTimer_.setInterval(diff * 1000);
+		backupCheckTimer_.start();
+	}
 }
 
 bool BackupManager::copyFile(QString sourceFilePath, QString targetFilePath)
 {
 	if( QFile(targetFilePath).exists() ) {
-		emit logWarning(tr("Soubor '%1' již existuje, stará verze bude smazána.").arg(targetFilePath));
+		const QString newFilePath = targetFilePath + ".old" + QString::number(qrand() % 10000);
+		emit logWarning(tr("Soubor '%1' již existuje, stará verze bude přejmenována na '%2'.").arg(targetFilePath, newFilePath));
 
-		if( !QFile(targetFilePath).remove() ) {
+		if( !QFile(targetFilePath).rename(newFilePath) ) {
 			emit logError(tr("Nepodařilo se smazat soubor '%1', který překážel záloze!").arg(targetFilePath));
 			return false;
 		}
