@@ -36,6 +36,7 @@ void Global::init()
 		trayIcon->setToolTip(tr("Straw Backup"));
 		connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayIconActivated(QSystemTrayIcon::ActivationReason)));
 		connect(backupManager, SIGNAL(logError(QString)), this, SLOT(onLogError()));
+		connect(trayIcon, SIGNAL(messageClicked()), mainWindow, SLOT(show()));
 	}
 
 	mainWindow->init();
@@ -117,5 +118,5 @@ void Global::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
 void Global::onLogError()
 {
 	if(!mainWindow->isVisible())
-		trayIcon->showMessage(tr("Chyba"), tr("Během zálohování nastala chyba."), QSystemTrayIcon::Critical);
+		trayIcon->showMessage(tr("Chyba"), tr("Během zálohování nastala chyba. Kliknutím na tuto zprávu otevřete okno aplikace."), QSystemTrayIcon::Critical);
 }

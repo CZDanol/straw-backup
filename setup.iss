@@ -2,11 +2,11 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Straw Backup"
-#define MyAppVersion "1.1.0.0"
+#define MyAppVersion "1.0.0.0"
 #define MyAppPublisher "Straw Solutions"
 #define MyAppCopyright "(c) 2018 Straw Solutions, Daniel Èejchan"
 #define MyAppURL "http://straw-solutions.cz"
-#define MyAppExeName "atisExporter.exe"
+#define MyAppExeName "strawBackup.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -27,7 +27,7 @@ VersionInfoCompany={#MyAppPublisher}
 VersionInfoCopyRight={#MyAppCopyright}
 DisableProgramGroupPage=yes
 OutputDir=setup
-OutputBaseFilename=atisExporter_win32
+OutputBaseFilename=strawBackup_win32
 Compression=lzma
 SolidCompression=yes
 UninstallDisplayIcon="{app}\{#MyAppExeName}"

@@ -8,6 +8,7 @@
 
 #include "global.h"
 #include "gui/mainwindow.h"
+#include "job/backupmanager.h"
 
 static const QVector<qlonglong> backupIntervals{
 	3600,
@@ -86,6 +87,11 @@ void BackupDirectoryEditDialog::on_btnOk_clicked()
 	}*/
 
 	if( rowId_ == -1 ) {
+		if( !QDir(targetFolder).isEmpty() ) {
+			QMessageBox::critical(this, tr("Chyba"), tr("Složka na zálohy '%1' není prázdná!").arg(targetFolder));
+			return;
+		}
+
 		QSqlQuery q("INSERT INTO backupDirectories DEFAULT VALUES");
 		rowId_ = q.lastInsertId().toInt();
 	}
@@ -100,6 +106,7 @@ void BackupDirectoryEditDialog::on_btnOk_clicked()
 	q.exec();
 
 	accept();
+	QMetaObject::invokeMethod(global->backupManager, "checkForBackups");
 }
 
 void BackupDirectoryEditDialog::on_btnCancel_clicked()

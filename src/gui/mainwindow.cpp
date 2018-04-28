@@ -27,8 +27,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::init()
 {
-	bkpDirsQuery_.prepare(QString("SELECT id, sourceDir AS '%1', strftime('%2', datetime(lastFinishedBackup, 'unixepoch', 'localtime')) AS '%3', remoteDir FROM backupDirectories ORDER BY sourceDir ASC")
-			.arg(tr("Zdrojová složka"), tr("%d.%m.%Y %H:%M"), tr("Poslední záloha")));
+	bkpDirsQuery_.prepare(QString("SELECT id, sourceDir AS '%1', remoteDir AS '%4', strftime('%2', datetime(lastFinishedBackup, 'unixepoch', 'localtime')) AS '%3' FROM backupDirectories ORDER BY sourceDir ASC")
+			.arg(tr("Zdrojová složka"), tr("%d.%m.%Y %H:%M"), tr("Poslední záloha"), tr("Cílová složka")));
 	ui->tvDirList->setModel(&bkpDirsModel_);
 
 	connect(global->backupDirectoryEditDialog, SIGNAL(accepted()), this, SLOT(updateBkpDirList()));
@@ -52,6 +52,8 @@ void MainWindow::closeEvent(QCloseEvent *e)
 
 	hide();
 	e->ignore();
+
+	global->trayIcon->showMessage(tr("Program stále běží na pozadí"), tr("Program Straw Backup stále běží. Pokud jej chcete vypnout, otevřete okno programu a v menu zvolte položku 'Ukončit'."));
 }
 
 void MainWindow::updateBkpDirList()
@@ -59,7 +61,6 @@ void MainWindow::updateBkpDirList()
 	bkpDirsQuery_.exec();
 	bkpDirsModel_.setQuery(bkpDirsQuery_);
 	ui->tvDirList->hideColumn(0);
-	ui->tvDirList->hideColumn(3);
 	ui->tvDirList->show();
 
 	emit onBkpListSelectionChanged();
