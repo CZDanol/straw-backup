@@ -1,0 +1,7 @@
+build/
+doc/
+lib/
+*.bak
+bin/
+installDeps/vc2015_redist.x86.exe
+setup/

@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>16/icons8_Add_Database_16px.png</file>
+        <file>16/icons8_Data_Backup_16px.png</file>
+        <file>16/icons8_Database_16px.png</file>
+        <file>16/icons8_Database_Administrator_16px.png</file>
+        <file>16/icons8_Database_View_16px.png</file>
+        <file>16/icons8_Delete_Database_16px.png</file>
+        <file>16/icons8_Door_Opened_16px.png</file>
+        <file>16/icons8_Plus_16px.png</file>
+        <file>16/icons8_Trash_Can_16px.png</file>
+        <file>16/icons8_Open_16px.png</file>
+        <file>16/icons8_Alarm_Clock_16px.png</file>
+        <file>16/icons8_Date_To_16px.png</file>
+        <file>16/icons8_Delete_16px.png</file>
+        <file>16/icons8_Checkmark_16px.png</file>
+    </qresource>
+</RCC>
