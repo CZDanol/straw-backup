@@ -82,6 +82,7 @@ void BackupManager::checkForBackups()
 
 		const QDir sourceQDir(sourceDir);
 		const QDir remoteQDir(remoteDir);
+		qDebug() << sourceDir << remoteDir;
 
 		qFile.bindValue(":backupDirectory", dirId);
 		qInsertFile.bindValue(":backupDirectory", dirId);
@@ -108,18 +109,22 @@ void BackupManager::checkForBackups()
 			iter.next();
 
 			const QFileInfo fileInfo = iter.fileInfo();
-			const QString filePath = fileInfo.filePath();
+			const QString filePath = sourceQDir.relativeFilePath(fileInfo.absoluteFilePath());
+
+			const QString sourceFilePath = sourceQDir.absoluteFilePath(filePath);
+			const QString remoteFilePath = remoteQDir.absoluteFilePath(filePath);
+			const QString remotePath = QFileInfo(remoteFilePath).absolutePath();
+
+			qDebug() << filePath;
 
 			qFile.bindValue(":filePath", filePath);
 			qFile.exec();
 
 			// File is not in the database -> copy it and create record
 			if(!qFile.next()) {
-				const QString sourceFilePath = sourceQDir.absoluteFilePath(filePath);
-
 				emit logInfo(tr("Zálohuji nový soubor '%1'...").arg(sourceFilePath));
-				if( !remoteQDir.mkpath(fileInfo.path()) ) {
-					emit logError(tr("Nepodařilo se vytvořit cestu '%1'!").arg(remoteQDir.absoluteFilePath(fileInfo.path())));
+				if( !QDir().mkpath(remotePath) ) {
+					emit logError(tr("Nepodařilo se vytvořit cestu '%1'!").arg(remotePath));
 					continue;
 				}
 
@@ -132,12 +137,9 @@ void BackupManager::checkForBackups()
 
 			// File in the database is older -> create a backup of it and copy a new version
 			} else if(fileInfo.lastModified().toSecsSinceEpoch() != qFile.value("remoteVersion").toLongLong()) {
-				const QString sourceFilePath = sourceQDir.absoluteFilePath(filePath);
-				const QString remoteFilePath = remoteQDir.absoluteFilePath(filePath);
-
 				emit logInfo(tr("Soubor '%1' změněn, vytvářím zálohu...").arg(sourceFilePath));
 
-				QString newFilePath = QDir(fileInfo.dir()).absoluteFilePath( QString("%1.%2.%3").arg( fileInfo.completeBaseName(), currentTimeFileSuffix, fileInfo.suffix() ) );
+				QString newFilePath = QDir(remotePath).absoluteFilePath( QString("%1.%2.%3").arg( fileInfo.completeBaseName(), currentTimeFileSuffix, fileInfo.suffix() ) );
 				QString newRemoteFilePath = remoteQDir.absoluteFilePath(newFilePath);
 
 				if(!QFile(remoteFilePath).rename(newRemoteFilePath))
