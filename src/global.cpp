@@ -12,8 +12,6 @@
 #include "gui/aboutdialog.h"
 #include "job/backupmanager.h"
 
-#include <QDebug>
-
 Global *global;
 
 Global::Global()
@@ -70,8 +68,7 @@ void Global::initDb()
 
 	if( !db.open() ) {
 		QMessageBox::critical(nullptr, tr("Kritická chyba"), tr("Nepodařilo se vytvořit/načíst databázi: %1").arg(dbFilepath));
-		QApplication::quit();
-		return;
+		exit(1);
 	}
 
 	if(!dbExists) {
@@ -80,7 +77,7 @@ void Global::initDb()
 					 "key VARCHAR(64) PRIMARY KEY,"
 					 "value TEXT"
 					 ")");
-		q.exec("INSERT INTO settings(key, value) VALUES('dbVersion', '1')");
+		q.exec("INSERT INTO settings(key, value) VALUES('dbVersion', '2')");
 
 		q.exec("CREATE TABLE backupDirectories ("
 					 "id INTEGER PRIMARY KEY,"
@@ -116,7 +113,7 @@ void Global::initDb()
 		QSqlQuery qVersion("SELECT value FROM settings WHERE key = 'dbVersion'");
 		qVersion.next();
 
-		if(qVersion.value(0) == '1') {
+		if(qVersion.value(0).toString() == '1') {
 			QSqlQuery q;
 			q.exec("ALTER TABLE backupDirectories ADD COLUMN excludeFilter TEXT");
 
@@ -125,15 +122,15 @@ void Global::initDb()
 			q.exec("CREATE INDEX i_history_backupDirectory_version ON history (backupDirectory, version)");
 
 			q.exec("UPDATE settings SET value = '2' WHERE key = 'dbVersion'");
+			emit backupManager->logWarning(tr("Verze databáze aktualizovaná na verzi 2."));
 
 			qVersion.exec();
 			qVersion.next();
 		}
 
-		if(qVersion.value(0) != '2') {
-			QMessageBox::critical(nullptr, tr("Kritická chyba"), tr("Nepodporovaná verze databáze"));
-			QApplication::quit();
-			return;
+		if(qVersion.value(0).toString() != '2') {
+			QMessageBox::critical(nullptr, tr("Kritická chyba"), tr("Nepodporovaná verze databáze (%1)").arg(qVersion.value(0).toString()));
+			exit(1);
 		}
 	}
 }
@@ -142,6 +139,7 @@ void Global::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
 	if(reason == QSystemTrayIcon::Context || reason == QSystemTrayIcon::DoubleClick) {
 		mainWindow->show();
+		mainWindow->activateWindow();
 		mainWindow->raise();
 	}
 }
