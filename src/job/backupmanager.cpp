@@ -88,8 +88,8 @@ void BackupManager::checkForBackups()
 			continue;
 		}
 
-		if(!remoteQDir.mkpath(".")) {
-			emit logError(tr("Nepodařilo se vytvořit složku pro zálohy '%1'!'").arg(remoteDir));
+		if(!remoteQDir.exists()) {
+			emit logError(tr("Složka pro zálohy '%1' neexistuje!'").arg(remoteDir));
 			continue;
 		}
 

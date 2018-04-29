@@ -74,8 +74,12 @@ void MainWindow::onBkpListSelectionChanged()
 
 void MainWindow::logInfo(QString text)
 {
+	QScrollBar *scrollBar = ui->tbLog->verticalScrollBar();
+	const bool wasDown = scrollBar->value() == scrollBar->maximum();
+
 	ui->tbLog->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), text));
-	ui->tbLog->verticalScrollBar()->setValue( ui->tbLog->verticalScrollBar()->maximum() );
+	if(wasDown)
+		scrollBar->setValue( scrollBar->maximum() );
 }
 
 void MainWindow::logWarning(QString text)
