@@ -29,6 +29,8 @@ private slots:
 	void logInfo(QString text);
 	void logWarning(QString text);
 	void logError(QString text);
+	void logSuccess(QString text);
+	void rawLog(QString text);
 
 private slots:
 	void on_btnNewBackupFolder_clicked();

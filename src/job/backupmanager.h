@@ -17,6 +17,7 @@ signals:
 	void logInfo(QString text);
 	void logWarning(QString text);
 	void logError(QString text);
+	void logSuccess(QString text);
 	void backupFinished();
 
 public slots:
@@ -29,6 +30,9 @@ private:
 private:
 	QThread thread_;
 	QTimer backupCheckTimer_;
+
+private:
+	QString currentTimeFileSuffix_;
 
 };
 

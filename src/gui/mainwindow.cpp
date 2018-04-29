@@ -36,6 +36,7 @@ void MainWindow::init()
 	connect(global->backupManager, SIGNAL(logInfo(QString)), this, SLOT(logInfo(QString)));
 	connect(global->backupManager, SIGNAL(logWarning(QString)), this, SLOT(logWarning(QString)));
 	connect(global->backupManager, SIGNAL(logError(QString)), this, SLOT(logError(QString)));
+	connect(global->backupManager, SIGNAL(logSuccess(QString)), this, SLOT(logSuccess(QString)));
 	connect(global->backupManager, SIGNAL(backupFinished()), this, SLOT(updateBkpDirList()));
 
 	updateBkpDirList();
@@ -74,22 +75,32 @@ void MainWindow::onBkpListSelectionChanged()
 
 void MainWindow::logInfo(QString text)
 {
-	QScrollBar *scrollBar = ui->tbLog->verticalScrollBar();
-	const bool wasDown = scrollBar->value() == scrollBar->maximum();
-
-	ui->tbLog->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), text));
-	if(wasDown)
-		scrollBar->setValue( scrollBar->maximum() );
+	rawLog("<span style='color: gray;'>" + text + "</span>");
 }
 
 void MainWindow::logWarning(QString text)
 {
-	logInfo("<span style='color: orange;'>" + text + "</span>");
+	rawLog("<span style='color: orange;'>" + text + "</span>");
 }
 
 void MainWindow::logError(QString text)
 {
-	logInfo("<span style='color: red;'>" + text + "</span>");
+	rawLog("<span style='color: red;'>" + text + "</span>");
+}
+
+void MainWindow::logSuccess(QString text)
+{
+	rawLog("<span style='color: green;'>" + text + "</span>");
+}
+
+void MainWindow::rawLog(QString text)
+{
+	QScrollBar *scrollBar = ui->tbLog->verticalScrollBar();
+	const bool wasDown = scrollBar->value() == scrollBar->maximum();
+
+	ui->tbLog->append(QString("<span style='color: gray;'>[%1]</span> %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), text));
+	if(wasDown)
+		scrollBar->setValue( scrollBar->maximum() );
 }
 
 void MainWindow::on_btnNewBackupFolder_clicked()

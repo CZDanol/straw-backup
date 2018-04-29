@@ -11,6 +11,9 @@
 #include "job/backupmanager.h"
 
 static const QVector<qlonglong> backupIntervals{
+	60 * 5,
+	60 * 15,
+	60 * 30,
 	3600,
 	3600 * 2,
 	3600 * 6,
@@ -41,8 +44,9 @@ void BackupDirectoryEditDialog::show(int rowId)
 	if(isNewRecord) {
 		ui->btnBackupFolder->setText("");
 		ui->btnSourceFolder->setText("");
-		ui->cmbBackupInterval->setCurrentIndex(0);
-		ui->cmbBackupKeepInterval->setCurrentIndex(0);
+		ui->cmbBackupInterval->setCurrentIndex(backupIntervals.indexOf(3600));
+		ui->cmbBackupKeepInterval->setCurrentIndex(backupIntervals.indexOf(3600 * 24 * 7));
+		ui->teExcludeFilter->setText("*.tmp");
 
 	} else {
 		QSqlQuery q;
@@ -58,6 +62,7 @@ void BackupDirectoryEditDialog::show(int rowId)
 		ui->btnSourceFolder->setText( q.value("sourceDir").toString() );
 		ui->cmbBackupInterval->setCurrentIndex( backupIntervals.indexOf( q.value("backupInterval").toLongLong() ) );
 		ui->cmbBackupKeepInterval->setCurrentIndex( backupIntervals.indexOf( q.value("keepHistoryDuration").toLongLong() ) );
+		ui->teExcludeFilter->setText(q.value("excludeFilter").toString());
 	}
 
 	ui->btnSourceFolder->setEnabled(isNewRecord);
@@ -97,11 +102,13 @@ void BackupDirectoryEditDialog::on_btnOk_clicked()
 	}
 
 	QSqlQuery q;
-	q.prepare("UPDATE backupDirectories SET remoteDir = :remoteDir, sourceDir = :sourceDir, backupInterval = :backupInterval, keepHistoryDuration = :keepHistoryDuration WHERE id = :id");
+	q.prepare("UPDATE backupDirectories SET remoteDir = :remoteDir, sourceDir = :sourceDir, backupInterval = :backupInterval, keepHistoryDuration = :keepHistoryDuration, excludeFilter = :excludeFilter WHERE id = :id");
 	q.bindValue(":sourceDir", ui->btnSourceFolder->text());
 	q.bindValue(":remoteDir", ui->btnBackupFolder->text());
 	q.bindValue(":backupInterval", backupIntervals[ui->cmbBackupInterval->currentIndex()]);
 	q.bindValue(":keepHistoryDuration", backupIntervals[ui->cmbBackupKeepInterval->currentIndex()]);
+	q.bindValue(":excludeFilter", ui->teExcludeFilter->toPlainText());
+
 	q.bindValue(":id", rowId_);
 	q.exec();
 

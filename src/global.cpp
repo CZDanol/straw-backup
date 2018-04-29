@@ -88,7 +88,8 @@ void Global::initDb()
 					 "remoteDir TEXT,"
 					 "lastFinishedBackup INTEGER,"
 					 "backupInterval INTEGER,"
-					 "keepHistoryDuration INTEGER"
+					 "keepHistoryDuration INTEGER,"
+					 "excludeFilter TEXT"
 					 ")");
 
 		q.exec("CREATE TABLE files ("
@@ -106,13 +107,43 @@ void Global::initDb()
 					 "originalFilePath TEXT,"
 					 "version INTEGER"
 					 ")");
+
+		q.exec("CREATE INDEX i_files_backupDirectory_filePath ON files (backupDirectory, filePath)");
+		q.exec("CREATE INDEX i_files_backupDirectory_lastChecked ON files (backupDirectory, lastChecked)");
+		q.exec("CREATE INDEX i_history_backupDirectory_version ON history (backupDirectory, version)");
+
+	} else {
+		QSqlQuery qVersion("SELECT value FROM settings WHERE key = 'dbVersion'");
+		qVersion.next();
+
+		if(qVersion.value(0) == '1') {
+			QSqlQuery q;
+			q.exec("ALTER TABLE backupDirectories ADD COLUMN excludeFilter TEXT");
+
+			q.exec("CREATE INDEX i_files_backupDirectory_filePath ON files (backupDirectory, filePath)");
+			q.exec("CREATE INDEX i_files_backupDirectory_lastChecked ON files (backupDirectory, lastChecked)");
+			q.exec("CREATE INDEX i_history_backupDirectory_version ON history (backupDirectory, version)");
+
+			q.exec("UPDATE settings SET value = '2' WHERE key = 'dbVersion'");
+
+			qVersion.exec();
+			qVersion.next();
+		}
+
+		if(qVersion.value(0) != '2') {
+			QMessageBox::critical(nullptr, tr("Kritická chyba"), tr("Nepodporovaná verze databáze"));
+			QApplication::quit();
+			return;
+		}
 	}
 }
 
 void Global::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-	if(reason == QSystemTrayIcon::Context || reason == QSystemTrayIcon::DoubleClick)
+	if(reason == QSystemTrayIcon::Context || reason == QSystemTrayIcon::DoubleClick) {
 		mainWindow->show();
+		mainWindow->raise();
+	}
 }
 
 void Global::onLogError()
