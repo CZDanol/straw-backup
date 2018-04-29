@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 
 #include <QCloseEvent>
 #include <QMessageBox>
@@ -54,7 +53,7 @@ void MainWindow::closeEvent(QCloseEvent *e)
 	hide();
 	e->ignore();
 
-	global->trayIcon->showMessage(tr("Program stále běží na pozadí"), tr("Program Straw Backup stále běží. Pokud jej chcete vypnout, otevřete okno programu a v menu zvolte položku 'Ukončit'."));
+	global->trayIcon->showMessage(tr("Program stále běží na pozadí"), tr("Program Straw Backup stále běží na pozadí. Pokud jej chcete vypnout, klikněte pravým tlačítkem na ikonu programu a vyberte 'Ukončit'."));
 }
 
 void MainWindow::updateBkpDirList()
@@ -185,4 +184,17 @@ void MainWindow::on_cmbAction_currentIndexChanged(int index)
 		return;
 
 	}
+}
+
+void MainWindow::on_actionBackupAll_triggered()
+{
+	QSqlQuery q("UPDATE backupDirectories SET lastFinishedBackup = NULL");
+	QMetaObject::invokeMethod(global->backupManager, "checkForBackups");
+}
+
+void MainWindow::on_actionShowMainWindow_triggered()
+{
+	show();
+	activateWindow();
+	raise();
 }

@@ -115,7 +115,7 @@ void BackupManager::checkForBackups()
 			{
 				bool isOk = true;
 				for(QRegExp &regex : excludeRegexes) {
-					if(!regex.exactMatch(filePath)) {
+					if(regex.exactMatch(filePath)) {
 						isOk = false;
 						break;
 					}
@@ -155,7 +155,7 @@ void BackupManager::checkForBackups()
 
 				emit logInfo(tr("Soubor '%1' změněn, vytvářím zálohu...").arg(sourceFilePath));
 
-				QString newFilePath = QDir(remotePath).absoluteFilePath( QString("%1.%2.%3").arg( fileInfo.completeBaseName(), currentTimeFileSuffix_, fileInfo.suffix() ) );
+				QString newFilePath = QDir(remotePath).absoluteFilePath( QString("%1.bkp.%2.%3").arg( fileInfo.completeBaseName(), currentTimeFileSuffix_, fileInfo.suffix() ) );
 				QString newRemoteFilePath = remoteQDir.absoluteFilePath(newFilePath);
 
 				if(!QFile(remoteFilePath).rename(newRemoteFilePath))
@@ -193,7 +193,7 @@ void BackupManager::checkForBackups()
 			qDeleteFile.exec();
 
 			QFileInfo fileInfo(remoteFilePath);
-			QString newFilePath = QDir(fileInfo.path()).absoluteFilePath( QString("%1.%2.%3").arg( fileInfo.completeBaseName(), currentTimeFileSuffix_, fileInfo.suffix() ) );
+			QString newFilePath = QDir(fileInfo.path()).absoluteFilePath( QString("%1.bkp.%2.%3").arg( fileInfo.completeBaseName(), currentTimeFileSuffix_, fileInfo.suffix() ) );
 			QString newRemoteFilePath = remoteQDir.absoluteFilePath(newFilePath);
 
 			if(!QFile(remoteFilePath).rename(newRemoteFilePath)) {
@@ -249,7 +249,7 @@ void BackupManager::updateBackupCheckTimer()
 bool BackupManager::copyFile(QString sourceFilePath, QString targetFilePath)
 {
 	if( QFile(targetFilePath).exists() ) {
-		const QString newFilePath = targetFilePath + ".original." + currentTimeFileSuffix_;
+		const QString newFilePath = targetFilePath + ".orig." + currentTimeFileSuffix_;
 		emit logWarning(tr("Soubor '%1' již existuje, stará verze bude přejmenována na '%2'.").arg(targetFilePath, newFilePath));
 
 		if( !QFile(targetFilePath).rename(newFilePath) ) {

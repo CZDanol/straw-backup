@@ -34,7 +34,12 @@ void Global::init()
 		trayIcon->setToolTip(tr("Straw Backup"));
 		connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayIconActivated(QSystemTrayIcon::ActivationReason)));
 		connect(backupManager, SIGNAL(logError(QString)), this, SLOT(onLogError()));
-		connect(trayIcon, SIGNAL(messageClicked()), mainWindow, SLOT(show()));
+
+		trayIconMenu = new QMenu();
+		trayIconMenu->addAction(mainWindow->getUI()->actionShowMainWindow);
+		trayIconMenu->addAction(mainWindow->getUI()->actionBackupAll);
+		trayIconMenu->addAction(mainWindow->getUI()->actionExit);
+		trayIcon->setContextMenu(trayIconMenu);
 	}
 
 	mainWindow->init();
@@ -137,11 +142,8 @@ void Global::initDb()
 
 void Global::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-	if(reason == QSystemTrayIcon::Context || reason == QSystemTrayIcon::DoubleClick) {
-		mainWindow->show();
-		mainWindow->activateWindow();
-		mainWindow->raise();
-	}
+	if(reason == QSystemTrayIcon::DoubleClick)
+		mainWindow->getUI()->actionShowMainWindow->trigger();
 }
 
 void Global::onLogError()

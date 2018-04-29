@@ -5,6 +5,8 @@
 #include <QSqlQuery>
 #include <QSqlQueryModel>
 
+#include "ui_mainwindow.h"
+
 namespace Ui {
 	class MainWindow;
 }
@@ -22,6 +24,11 @@ public:
 public:
 	virtual void closeEvent(QCloseEvent *e) override;
 
+public:
+	Ui::MainWindow *getUI() {
+		return ui;
+	}
+
 private slots:
 	void updateBkpDirList();
 	void onBkpListSelectionChanged();
@@ -38,6 +45,10 @@ private slots:
 	void on_actionExit_triggered();
 	void on_actionAbout_triggered();
 	void on_cmbAction_currentIndexChanged(int index);
+
+	void on_actionBackupAll_triggered();
+
+	void on_actionShowMainWindow_triggered();
 
 private:
 	Ui::MainWindow *ui;
