@@ -170,7 +170,7 @@ void MainWindow::on_cmbAction_currentIndexChanged(int index)
 	}
 
 	case 3: {
-		QDesktopServices::openUrl( QUrl( "file:///" + QDir::toNativeSeparators( bkpDirsModel_.data(bkpDirsModel_.index(row, 3)).toString())));
+		QDesktopServices::openUrl( QUrl( "file:///" + QDir::toNativeSeparators( bkpDirsModel_.data(bkpDirsModel_.index(row, 2)).toString())));
 		break;
 	}
 

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>635</width>
-    <height>193</height>
+    <height>206</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -110,7 +110,7 @@
    <item>
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Program využíva frameworku Qt pod licencí LGPL.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Program využíva frameworku Qt pod licencí LGPL.&lt;br/&gt;Program využívá sady ikon Icons8.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

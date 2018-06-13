@@ -105,6 +105,11 @@ void BackupManager::checkForBackups()
 		while(iter.hasNext()) {
 			if(thread_.isInterruptionRequested())
 				return;
+      
+      if(!remoteQDir.exists()) {
+        emit logError(tr("Složka '%1' přestala být dostupná.").arg(remoteDir));
+        break;
+      }
 
 			iter.next();
 
@@ -240,7 +245,7 @@ void BackupManager::updateBackupCheckTimer()
 	if( q.value(0).isNull() ) {
 		backupCheckTimer_.stop();
 	} else {
-		int diff = qMax<qlonglong>(1, q.value(0).toLongLong() - QDateTime::currentSecsSinceEpoch());
+		int diff = qMax<qlonglong>(60 * 10, q.value(0).toLongLong() - QDateTime::currentSecsSinceEpoch());
 		backupCheckTimer_.setInterval(diff * 1000);
 		backupCheckTimer_.start();
 	}

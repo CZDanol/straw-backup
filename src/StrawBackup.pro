@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TEMPLATE = app
 
-VERSION = 1.0.0.0
+VERSION = 1.0.1.0
 QMAKE_TARGET_COMPANY = Straw Solutions
 QMAKE_TARGET_PRODUCT = Straw Backup
 
