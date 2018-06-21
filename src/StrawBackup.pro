@@ -4,13 +4,13 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml sql
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TEMPLATE = app
 
-VERSION = 1.0.1.0
+VERSION = 1.1.0.6
 QMAKE_TARGET_COMPANY = Straw Solutions
 QMAKE_TARGET_PRODUCT = Straw Backup
 
@@ -30,7 +30,11 @@ global.cpp \
 main.cpp \
     gui/backupdirectoryeditdialog.cpp \
     job/backupmanager.cpp \
-    gui/aboutdialog.cpp
+    gui/aboutdialog.cpp \
+    job/jobthread.cpp \
+    threaddb/dbmanager.cpp \
+    threaddb/dbmodel.cpp \
+    threaddb/dbquery.cpp
 
 
 HEADERS  += \
@@ -38,7 +42,11 @@ gui/mainwindow.h \
 global.h \
     gui/backupdirectoryeditdialog.h \
     job/backupmanager.h \
-    gui/aboutdialog.h
+    gui/aboutdialog.h \
+    job/jobthread.h \
+    threaddb/dbmanager.h \
+    threaddb/dbmodel.h \
+    threaddb/dbquery.h
 
 
 FORMS    += \

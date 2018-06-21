@@ -4,6 +4,9 @@
 #include <QMainWindow>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
+#include <QMenu>
+
+#include "threaddb/dbmodel.h"
 
 #include "ui_mainwindow.h"
 
@@ -29,9 +32,12 @@ public:
 		return ui;
 	}
 
+private:
+	int selectedFolderId();
+
 private slots:
 	void updateBkpDirList();
-	void onBkpListSelectionChanged();
+	void onTvDirListMenuRequested(const QPoint &pos);
 
 	void logInfo(QString text);
 	void logWarning(QString text);
@@ -41,14 +47,16 @@ private slots:
 
 private slots:
 	void on_btnNewBackupFolder_clicked();
-	void on_tvDirList_activated(const QModelIndex &index);
 	void on_actionExit_triggered();
 	void on_actionAbout_triggered();
-	void on_cmbAction_currentIndexChanged(int index);
-
 	void on_actionBackupAll_triggered();
-
 	void on_actionShowMainWindow_triggered();
+	void on_btnLogScrollDown_clicked();
+	void on_actionFolderDelete_triggered();
+	void on_actionFolderBackupNow_triggered();
+	void on_actionFolderOpenSource_triggered();
+	void on_actionFolderOpenTarget_triggered();
+	void on_actionFolderEdit_triggered();
 
 private:
 	Ui::MainWindow *ui;
@@ -56,6 +64,8 @@ private:
 private:
 	QSqlQuery bkpDirsQuery_;
 	QSqlQueryModel bkpDirsModel_;
+	DBModel model_;
+	QMenu *tvDirListMenu_;
 
 };
 

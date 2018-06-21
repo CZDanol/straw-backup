@@ -1,0 +1,15 @@
+QTabWidget::right-corner {
+  height: 30px;
+	bottom: 5px;
+}
+
+QListWidget::item:selected, QListView::item:selected,
+QTreeWidget::item:selected, QTreeView::item:selected,
+QTableWidget::item:selected, QTableView::item:selected {
+  background-color: #AAD4ff;
+	color: black;
+}
+
+QPushButton::disabled {
+  color: gray;
+}

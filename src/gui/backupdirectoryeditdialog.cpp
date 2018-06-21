@@ -2,7 +2,6 @@
 #include "ui_BackupDirectoryEditDialog.h"
 
 #include <QFileDialog>
-#include <QSqlQuery>
 #include <QMessageBox>
 #include <QDir>
 
@@ -21,7 +20,10 @@ static const QVector<qlonglong> backupIntervals{
 	3600 * 24,
 	3600 * 24 * 7,
 	3600 * 24 * 14,
-	3600 * 24 * 30
+	3600 * 24 * 30,
+	3600 * 24 * 60,
+	3600 * 24 * 90,
+	3600 * 24 * 180,
 };
 
 BackupDirectoryEditDialog::BackupDirectoryEditDialog(QWidget *parent) :
@@ -46,23 +48,16 @@ void BackupDirectoryEditDialog::show(int rowId)
 		ui->btnSourceFolder->setText("");
 		ui->cmbBackupInterval->setCurrentIndex(backupIntervals.indexOf(3600));
 		ui->cmbBackupKeepInterval->setCurrentIndex(backupIntervals.indexOf(3600 * 24 * 7));
-		ui->teExcludeFilter->setText("*.tmp");
+		ui->teExcludeFilter->setText("*.tmp\n*/.dropbox\n*~*");
 
 	} else {
-		QSqlQuery q;
-		q.prepare("SELECT * FROM backupDirectories WHERE id = ?");
-		q.bindValue(0, rowId);
+		QSqlRecord row = global->db->selectRowAssoc("SELECT * FROM backupDirectories WHERE id = :id", {{":id", rowId}});
 
-		if(!q.exec() || !q.next()) {
-			QMessageBox::critical(global->mainWindow, tr("Chyba"), tr("Chyba databáze (backupDirectories entry missing)"));
-			return;
-		}
-
-		ui->btnBackupFolder->setText( q.value("remoteDir").toString() );
-		ui->btnSourceFolder->setText( q.value("sourceDir").toString() );
-		ui->cmbBackupInterval->setCurrentIndex( backupIntervals.indexOf( q.value("backupInterval").toLongLong() ) );
-		ui->cmbBackupKeepInterval->setCurrentIndex( backupIntervals.indexOf( q.value("keepHistoryDuration").toLongLong() ) );
-		ui->teExcludeFilter->setText(q.value("excludeFilter").toString());
+		ui->btnBackupFolder->setText( row.value("remoteDir").toString() );
+		ui->btnSourceFolder->setText( row.value("sourceDir").toString() );
+		ui->cmbBackupInterval->setCurrentIndex( backupIntervals.indexOf( row.value("backupInterval").toLongLong() ) );
+		ui->cmbBackupKeepInterval->setCurrentIndex( backupIntervals.indexOf( row.value("keepHistoryDuration").toLongLong() ) );
+		ui->teExcludeFilter->setText(row.value("excludeFilter").toString());
 	}
 
 	ui->btnSourceFolder->setEnabled(isNewRecord);
@@ -97,20 +92,20 @@ void BackupDirectoryEditDialog::on_btnOk_clicked()
 			return;
 		}
 
-		QSqlQuery q("INSERT INTO backupDirectories DEFAULT VALUES");
-		rowId_ = q.lastInsertId().toInt();
+		rowId_ = (size_t) global->db->insertAssoc("INSERT INTO backupDirectories DEFAULT VALUES").toLongLong();
 	}
 
-	QSqlQuery q;
-	q.prepare("UPDATE backupDirectories SET remoteDir = :remoteDir, sourceDir = :sourceDir, backupInterval = :backupInterval, keepHistoryDuration = :keepHistoryDuration, excludeFilter = :excludeFilter WHERE id = :id");
-	q.bindValue(":sourceDir", ui->btnSourceFolder->text());
-	q.bindValue(":remoteDir", ui->btnBackupFolder->text());
-	q.bindValue(":backupInterval", backupIntervals[ui->cmbBackupInterval->currentIndex()]);
-	q.bindValue(":keepHistoryDuration", backupIntervals[ui->cmbBackupKeepInterval->currentIndex()]);
-	q.bindValue(":excludeFilter", ui->teExcludeFilter->toPlainText());
-
-	q.bindValue(":id", rowId_);
-	q.exec();
+	global->db->blockingExecAssoc(
+				"UPDATE backupDirectories SET remoteDir = :remoteDir, sourceDir = :sourceDir, backupInterval = :backupInterval, keepHistoryDuration = :keepHistoryDuration, excludeFilter = :excludeFilter WHERE id = :id",
+				{
+					{":sourceDir", ui->btnSourceFolder->text()},
+					{":remoteDir", ui->btnBackupFolder->text()},
+					{":backupInterval", backupIntervals[ui->cmbBackupInterval->currentIndex()]},
+					{":keepHistoryDuration", backupIntervals[ui->cmbBackupKeepInterval->currentIndex()]},
+					{":excludeFilter", ui->teExcludeFilter->toPlainText()},
+					{":id", rowId_}
+				}
+				);
 
 	accept();
 	QMetaObject::invokeMethod(global->backupManager, "checkForBackups");

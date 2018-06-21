@@ -14,7 +14,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Úprava složky</string>
+   <string>Detail zálohování</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../res/resources.qrc">
+    <normaloff>:/16/icons8_Settings_16px_1.png</normaloff>:/16/icons8_Settings_16px_1.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="2">
@@ -143,6 +147,21 @@
        <string>1 měsíc</string>
       </property>
      </item>
+     <item>
+      <property name="text">
+       <string>2 měsíce</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>3 měsíce</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>6 měsíců</string>
+      </property>
+     </item>
     </widget>
    </item>
    <item row="2" column="0">
@@ -220,6 +239,21 @@
      <item>
       <property name="text">
        <string>1 měsíc</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>2 měsíce</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>3 měsíce</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>6 měsíců</string>
       </property>
      </item>
     </widget>

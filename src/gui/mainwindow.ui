@@ -14,32 +14,56 @@
    <string>Straw Backup</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QSplitter" name="splitter">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+     <widget class="QTabWidget" name="twBackups">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>1</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-      <widget class="QWidget" name="verticalWidget" native="true">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>2</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="icon">
+        <iconset resource="../../res/resources.qrc">
+         <normaloff>:/16/icons8_Open_16px.png</normaloff>:/16/icons8_Open_16px.png</iconset>
+       </attribute>
+       <attribute name="title">
+        <string>Zálohované složky</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QWidget" name="twBackupsCorner" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="btnNewBackupFolder">
+             <property name="text">
+              <string> Přidat</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../../res/resources.qrc">
+               <normaloff>:/16/icons8_Plus_16px.png</normaloff>:/16/icons8_Plus_16px.png</iconset>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
         <item>
          <widget class="QTreeView" name="tvDirList">
           <property name="sizePolicy">
@@ -48,84 +72,81 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="contextMenuPolicy">
+           <enum>Qt::CustomContextMenu</enum>
+          </property>
+          <property name="allColumnsShowFocus">
+           <bool>true</bool>
+          </property>
          </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QComboBox" name="cmbAction">
-            <property name="sizeAdjustPolicy">
-             <enum>QComboBox::AdjustToContents</enum>
-            </property>
-            <item>
-             <property name="text">
-              <string>Akce</string>
-             </property>
-             <property name="icon">
-              <iconset resource="../../res/resources.qrc">
-               <normaloff>:/16/icons8_More_16px.png</normaloff>:/16/icons8_More_16px.png</iconset>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Odstranit</string>
-             </property>
-             <property name="icon">
-              <iconset resource="../../res/resources.qrc">
-               <normaloff>:/16/icons8_Trash_Can_16px.png</normaloff>:/16/icons8_Trash_Can_16px.png</iconset>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Zálohovat nyní</string>
-             </property>
-             <property name="icon">
-              <iconset resource="../../res/resources.qrc">
-               <normaloff>:/16/icons8_Data_Backup_16px.png</normaloff>:/16/icons8_Data_Backup_16px.png</iconset>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Zálohová složka</string>
-             </property>
-             <property name="icon">
-              <iconset resource="../../res/resources.qrc">
-               <normaloff>:/16/icons8_Open_16px.png</normaloff>:/16/icons8_Open_16px.png</iconset>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Zdrojová složka</string>
-             </property>
-             <property name="icon">
-              <iconset resource="../../res/resources.qrc">
-               <normaloff>:/16/icons8_Open_16px.png</normaloff>:/16/icons8_Open_16px.png</iconset>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btnNewBackupFolder">
-            <property name="text">
-             <string> Přidat</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../../res/resources.qrc">
-              <normaloff>:/16/icons8_Plus_16px.png</normaloff>:/16/icons8_Plus_16px.png</iconset>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </item>
        </layout>
       </widget>
-      <widget class="QTextBrowser" name="tbLog">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>3</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="twLog">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>2</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="icon">
+        <iconset resource="../../res/resources.qrc">
+         <normaloff>:/16/icons8_Event_Log_16px.png</normaloff>:/16/icons8_Event_Log_16px.png</iconset>
+       </attribute>
+       <attribute name="title">
+        <string> Log</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QWidget" name="twLogCorner" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="btnLogScrollDown">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../../res/resources.qrc">
+               <normaloff>:/16/icons8_Scroll_Down_16px.png</normaloff>:/16/icons8_Scroll_Down_16px.png</iconset>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTextBrowser" name="tbLog">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>3</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -189,9 +210,71 @@
     <string>Otevřít program</string>
    </property>
   </action>
+  <action name="actionFolderDelete">
+   <property name="icon">
+    <iconset resource="../../res/resources.qrc">
+     <normaloff>:/16/icons8_Trash_Can_16px.png</normaloff>:/16/icons8_Trash_Can_16px.png</iconset>
+   </property>
+   <property name="text">
+    <string>Odstranit</string>
+   </property>
+  </action>
+  <action name="actionFolderBackupNow">
+   <property name="icon">
+    <iconset resource="../../res/resources.qrc">
+     <normaloff>:/16/icons8_Data_Backup_16px.png</normaloff>:/16/icons8_Data_Backup_16px.png</iconset>
+   </property>
+   <property name="text">
+    <string>Zálohovat nyní</string>
+   </property>
+  </action>
+  <action name="actionFolderOpenSource">
+   <property name="icon">
+    <iconset resource="../../res/resources.qrc">
+     <normaloff>:/16/icons8_Open_16px.png</normaloff>:/16/icons8_Open_16px.png</iconset>
+   </property>
+   <property name="text">
+    <string>Otevřít zálohovanou složku</string>
+   </property>
+  </action>
+  <action name="actionFolderOpenTarget">
+   <property name="icon">
+    <iconset resource="../../res/resources.qrc">
+     <normaloff>:/16/icons8_Database_16px.png</normaloff>:/16/icons8_Database_16px.png</iconset>
+   </property>
+   <property name="text">
+    <string>Otevřít složku se zálohami</string>
+   </property>
+  </action>
+  <action name="actionFolderEdit">
+   <property name="icon">
+    <iconset resource="../../res/resources.qrc">
+     <normaloff>:/16/icons8_Settings_16px_1.png</normaloff>:/16/icons8_Settings_16px_1.png</iconset>
+   </property>
+   <property name="text">
+    <string>Upravit</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../../res/resources.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>tvDirList</sender>
+   <signal>activated(QModelIndex)</signal>
+   <receiver>actionFolderEdit</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>176</x>
+     <y>291</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

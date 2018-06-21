@@ -20,5 +20,11 @@
         <file>straw_logo_128w.png</file>
         <file>16/icons8_More_16px.png</file>
         <file>16/icons8_Private_16px.png</file>
+        <file>16/icons8_Date_From_16px.png</file>
+        <file>16/icons8_Event_Log_16px.png</file>
+        <file>stylesheet.css</file>
+        <file>16/icons8_Down_Arrow_16px.png</file>
+        <file>16/icons8_Scroll_Down_16px.png</file>
+        <file>16/icons8_Settings_16px_1.png</file>
     </qresource>
 </RCC>

@@ -4,7 +4,8 @@
 #include <QSystemTrayIcon>
 #include <QObject>
 #include <QMenu>
-#include <QSqlDatabase>
+
+#include "threaddb/dbmanager.h"
 
 class MainWindow;
 class BackupDirectoryEditDialog;
@@ -33,7 +34,7 @@ public:
 
 public:
 	BackupManager *backupManager;
-	QSqlDatabase db;
+	DBManager *db;
 
 private:
 	void initDb();
@@ -41,6 +42,8 @@ private:
 private slots:
 	void onTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
 	void onLogError();
+	void onDbQueryError(QString query, QString err);
+	void onDbOpenError(QString err);
 
 };
 

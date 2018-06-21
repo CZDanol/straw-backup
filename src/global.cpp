@@ -5,7 +5,6 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QFileInfo>
-#include <QSqlQuery>
 
 #include "gui/mainwindow.h"
 #include "gui/backupdirectoryeditdialog.h"
@@ -54,10 +53,15 @@ void Global::uninit()
 	delete mainWindow;
 	delete trayIcon;
 	delete backupManager;
+	delete db;
 }
 
 void Global::initDb()
 {
+	db = new DBManager();
+	connect(db, SIGNAL(sigQueryError(QString, QString)), this, SLOT(onDbQueryError(QString, QString)));
+	connect(db, SIGNAL(sigOpenError(QString)), this, SLOT(onDbOpenError(QString)));
+
 	QString dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 	if( !QDir(dbPath).mkpath(".") ) {
 		QMessageBox::critical(nullptr, tr("Kritická chyba"), tr("Nepodařilo se vytvořit složku pro databázi: %1").arg(dbPath));
@@ -68,23 +72,16 @@ void Global::initDb()
 	QString dbFilepath = QDir(dbPath).absoluteFilePath("db.sqlite");
 	bool dbExists = QFileInfo(dbFilepath).exists();
 
-	db = QSqlDatabase::addDatabase("QSQLITE");
-	db.setDatabaseName(dbFilepath);
-
-	if( !db.open() ) {
-		QMessageBox::critical(nullptr, tr("Kritická chyba"), tr("Nepodařilo se vytvořit/načíst databázi: %1").arg(dbFilepath));
-		exit(1);
-	}
+	db->openSQLITE(dbFilepath);
 
 	if(!dbExists) {
-		QSqlQuery q;
-		q.exec("CREATE TABLE settings ("
+		db->execAssoc("CREATE TABLE settings ("
 					 "key VARCHAR(64) PRIMARY KEY,"
 					 "value TEXT"
 					 ")");
-		q.exec("INSERT INTO settings(key, value) VALUES('dbVersion', '2')");
+		db->execAssoc("INSERT INTO settings(key, value) VALUES('dbVersion', '2')");
 
-		q.exec("CREATE TABLE backupDirectories ("
+		db->execAssoc("CREATE TABLE backupDirectories ("
 					 "id INTEGER PRIMARY KEY,"
 					 "sourceDir TEXT,"
 					 "remoteDir TEXT,"
@@ -94,7 +91,7 @@ void Global::initDb()
 					 "excludeFilter TEXT"
 					 ")");
 
-		q.exec("CREATE TABLE files ("
+		db->execAssoc("CREATE TABLE files ("
 					 "id INTEGER PRIMARY KEY,"
 					 "backupDirectory INTEGER,"
 					 "filePath TEXT,"
@@ -102,7 +99,7 @@ void Global::initDb()
 					 "remoteVersion INTEGER" // Modified time of the backed up file
 					 ")");
 
-		q.exec("CREATE TABLE history ("
+		db->execAssoc("CREATE TABLE history ("
 					 "id INTEGER PRIMARY KEY,"
 					 "backupDirectory INTEGER,"
 					 "remoteFilePath TEXT,"
@@ -110,34 +107,35 @@ void Global::initDb()
 					 "version INTEGER"
 					 ")");
 
-		q.exec("CREATE INDEX i_files_backupDirectory_filePath ON files (backupDirectory, filePath)");
-		q.exec("CREATE INDEX i_files_backupDirectory_lastChecked ON files (backupDirectory, lastChecked)");
-		q.exec("CREATE INDEX i_history_backupDirectory_version ON history (backupDirectory, version)");
+		db->execAssoc("CREATE INDEX i_files_backupDirectory_filePath ON files (backupDirectory, filePath)");
+		db->execAssoc("CREATE INDEX i_files_backupDirectory_lastChecked ON files (backupDirectory, lastChecked)");
+		db->execAssoc("CREATE INDEX i_history_backupDirectory_version ON history (backupDirectory, version)");
 
 	} else {
-		QSqlQuery qVersion("SELECT value FROM settings WHERE key = 'dbVersion'");
-		qVersion.next();
+		QString version = db->selectValueAssoc("SELECT value FROM settings WHERE key = 'dbVersion'").toString();
 
-		if(qVersion.value(0).toString() == '1') {
-			QSqlQuery q;
-			q.exec("ALTER TABLE backupDirectories ADD COLUMN excludeFilter TEXT");
+		if(version == "1") {
+			db->execAssoc("ALTER TABLE backupDirectories ADD COLUMN excludeFilter TEXT");
 
-			q.exec("CREATE INDEX i_files_backupDirectory_filePath ON files (backupDirectory, filePath)");
-			q.exec("CREATE INDEX i_files_backupDirectory_lastChecked ON files (backupDirectory, lastChecked)");
-			q.exec("CREATE INDEX i_history_backupDirectory_version ON history (backupDirectory, version)");
+			db->execAssoc("CREATE INDEX i_files_backupDirectory_filePath ON files (backupDirectory, filePath)");
+			db->execAssoc("CREATE INDEX i_files_backupDirectory_lastChecked ON files (backupDirectory, lastChecked)");
+			db->execAssoc("CREATE INDEX i_history_backupDirectory_version ON history (backupDirectory, version)");
 
-			q.exec("UPDATE settings SET value = '2' WHERE key = 'dbVersion'");
+			db->execAssoc("UPDATE settings SET value = '2' WHERE key = 'dbVersion'");
 			emit backupManager->logWarning(tr("Verze databáze aktualizovaná na verzi 2."));
 
-			qVersion.exec();
-			qVersion.next();
+			version = "2";
 		}
 
-		if(qVersion.value(0).toString() != '2') {
-			QMessageBox::critical(nullptr, tr("Kritická chyba"), tr("Nepodporovaná verze databáze (%1)").arg(qVersion.value(0).toString()));
+		if(version != "2") {
+			QMessageBox::critical(nullptr, tr("Kritická chyba"), tr("Nepodporovaná verze databáze (%1)").arg(version));
 			exit(1);
 		}
 	}
+
+	/*// REMOVEME
+	db->exec("DELETE FROM files");
+	db->exec("DELETE FROM history");*/
 }
 
 void Global::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -150,4 +148,15 @@ void Global::onLogError()
 {
 	if(!mainWindow->isVisible())
 		trayIcon->showMessage(tr("Chyba"), tr("Během zálohování nastala chyba. Kliknutím na tuto zprávu otevřete okno aplikace."), QSystemTrayIcon::Critical);
+}
+
+void Global::onDbQueryError(QString query, QString err)
+{
+	QMessageBox::critical(nullptr, tr("Chyba databáze"), tr("Chyba databáze '%1' u dotazu '%2'").arg(err, query));
+}
+
+void Global::onDbOpenError(QString err)
+{
+	QMessageBox::critical(nullptr, tr("Kritická chyba"), tr("Nepodařilo se vytvořit/načíst databázi: %1").arg(err));
+	exit(1);
 }

@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QThread>
-#include <QSqlQuery>
+#include <QDateTime>
 
 class BackupManager : public QObject
 {
@@ -12,6 +12,7 @@ class BackupManager : public QObject
 
 public:
 	BackupManager();
+	~BackupManager();
 
 signals:
 	void logInfo(QString text);
@@ -26,10 +27,15 @@ public slots:
 
 private:
 	bool copyFile(QString sourceFilePath, QString targetFilePath);
+	void commitUnchangedFileIds(const qlonglong &currentTime, QVector<qlonglong> &unchangedFileIds);
+
+private slots:
+	void updateLastLogTime();
 
 private:
 	QThread thread_;
-	QTimer backupCheckTimer_;
+	QTimer *backupCheckTimer_;
+	QDateTime lastLogTime_;
 
 private:
 	QString currentTimeFileSuffix_;
