@@ -14,8 +14,8 @@
    <string>Straw Backup</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1">
      <widget class="QTabWidget" name="twBackups">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -84,7 +84,7 @@
       </widget>
      </widget>
     </item>
-    <item>
+    <item row="0" column="2">
      <widget class="QTabWidget" name="twLog">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -93,7 +93,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="icon">
@@ -138,6 +138,27 @@
         </item>
         <item>
          <widget class="QTextBrowser" name="tbLog">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>3</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="icon">
+        <iconset resource="../../res/resources.qrc">
+         <normaloff>:/16/icons8_High_Priority_16px.png</normaloff>:/16/icons8_High_Priority_16px.png</iconset>
+       </attribute>
+       <attribute name="title">
+        <string> Chyby</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QTextBrowser" name="tbErrorLog">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>3</horstretch>

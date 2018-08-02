@@ -48,7 +48,7 @@ void BackupDirectoryEditDialog::show(int rowId)
 		ui->btnSourceFolder->setText("");
 		ui->cmbBackupInterval->setCurrentIndex(backupIntervals.indexOf(3600));
 		ui->cmbBackupKeepInterval->setCurrentIndex(backupIntervals.indexOf(3600 * 24 * 7));
-		ui->teExcludeFilter->setText("*.tmp\n*/.dropbox\n*~*");
+		ui->teExcludeFilter->setText("*.tmp\n*/.dropbox/*\n*/.git/*\n*~*");
 
 	} else {
 		QSqlRecord row = global->db->selectRowAssoc("SELECT * FROM backupDirectories WHERE id = :id", {{":id", rowId}});

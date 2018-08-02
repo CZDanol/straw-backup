@@ -43,7 +43,7 @@ private slots:
 	void logWarning(QString text);
 	void logError(QString text);
 	void logSuccess(QString text);
-	void rawLog(QString text);
+	void rawLog(QTextBrowser *tb, QString text);
 
 private slots:
 	void on_btnNewBackupFolder_clicked();

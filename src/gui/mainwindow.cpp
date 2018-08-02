@@ -27,6 +27,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	tvDirListMenu_->addSeparator();
 	tvDirListMenu_->addActions({ui->actionFolderOpenSource, ui->actionFolderOpenTarget});
 	connect(ui->tvDirList, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onTvDirListMenuRequested(QPoint)));
+
+	auto text = tr("<span style='color: blue;'>Rádi přijmeme zpětnou vazbu a návrhy na vylepšení na e-mailové adrese danol@straw-solutions.cz.</span>");
+	rawLog(ui->tbLog, text);
+	rawLog(ui->tbErrorLog, text);
 }
 
 MainWindow::~MainWindow()
@@ -97,37 +101,39 @@ void MainWindow::onTvDirListMenuRequested(const QPoint &pos)
 
 void MainWindow::logInfo(QString text)
 {
-	rawLog("<span style='color: gray;'>" + text + "</span>");
+	rawLog(ui->tbLog, "<span style='color: gray;'>" + text + "</span>");
 }
 
 void MainWindow::logWarning(QString text)
 {
-	rawLog("<span style='color: orange;'>" + text + "</span>");
+	rawLog(ui->tbLog, "<span style='color: orange;'>" + text + "</span>");
+	rawLog(ui->tbErrorLog, "<span style='color: orange;'>" + text + "</span>");
 }
 
 void MainWindow::logError(QString text)
 {
-	rawLog("<span style='color: red;'>" + text + "</span>");
+	rawLog(ui->tbLog, "<span style='color: red;'>" + text + "</span>");
+	rawLog(ui->tbErrorLog, "<span style='color: red;'>" + text + "</span>");
 }
 
 void MainWindow::logSuccess(QString text)
 {
-	rawLog("<span style='color: green;'>" + text + "</span>");
+	rawLog(ui->tbLog, "<span style='color: green;'>" + text + "</span>");
 }
 
-void MainWindow::rawLog(QString text)
+void MainWindow::rawLog(QTextBrowser *tb, QString text)
 {
-	QScrollBar *scrollBar = ui->tbLog->verticalScrollBar();
+	QScrollBar *scrollBar = tb->verticalScrollBar();
 	const bool wasDown = scrollBar->value() == scrollBar->maximum();
 
-	ui->tbLog->append(QString("<span style='color: gray;'>[%1]</span> %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), text));
+	tb->append(QString("<span style='color: gray;'>[%1]</span> %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), text));
 	if(wasDown)
 		scrollBar->setValue( scrollBar->maximum() );
 
 
-	QTextCursor cursor = ui->tbLog->textCursor();
+	QTextCursor cursor = tb->textCursor();
 	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-	cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, ui->tbLog->document()->lineCount() - 512);
+	cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor, ui->tbLog->document()->blockCount() - 4096);
 	cursor.removeSelectedText();
 }
 
@@ -155,6 +161,10 @@ void MainWindow::on_actionBackupAll_triggered()
 void MainWindow::on_actionShowMainWindow_triggered()
 {
 	show();
+
+	if( windowState() & Qt::WindowMinimized )
+		setWindowState( Qt::WindowActive );
+
 	activateWindow();
 	raise();
 }
@@ -162,6 +172,7 @@ void MainWindow::on_actionShowMainWindow_triggered()
 void MainWindow::on_btnLogScrollDown_clicked()
 {
 	ui->tbLog->verticalScrollBar()->setValue(ui->tbLog->verticalScrollBar()->maximum());
+	ui->tbErrorLog->verticalScrollBar()->setValue(ui->tbErrorLog->verticalScrollBar()->maximum());
 }
 
 void MainWindow::on_actionFolderDelete_triggered()

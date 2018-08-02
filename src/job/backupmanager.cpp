@@ -33,7 +33,8 @@ BackupManager::BackupManager()
 
 BackupManager::~BackupManager()
 {
-
+	thread_.requestInterruption();
+	thread_.wait();
 }
 
 void BackupManager::checkForBackups()
@@ -45,9 +46,6 @@ void BackupManager::checkForBackups()
 
 	DBQuery findFileQuery(global->db);
 	findFileQuery.prepare("SELECT * FROM files WHERE (backupDirectory = :backupDirectory) AND (filePath = :filePath)");
-
-	/*DBQuery updateLastCheckedQuery(global->db);
-	updateLastCheckedQuery.prepare("UPDATE files SET lastChecked = :lastChecked WHERE id = :id");*/
 
 	size_t filesChecked = 0;
 
