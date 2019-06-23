@@ -31,6 +31,8 @@ void DBManager::openSQLITE(const QString &filename)
 
 		if( !db_.open() )
 			emit sigOpenError(db_.lastError().text());
+		else
+			db_.exec("PRAGMA journal_mode = TRUNCATE");
 	});
 }
 

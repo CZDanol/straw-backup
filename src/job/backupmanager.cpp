@@ -137,7 +137,7 @@ void BackupManager::checkForBackups()
 					continue;
 				}
 
-				if( !copyFile(sourceFilePath, remoteFilePath) )
+				if(!copyFile(sourceFilePath, remoteFilePath))
 					continue;
 
 				global->db->execAssoc(
@@ -280,14 +280,20 @@ void BackupManager::updateBackupCheckTimer()
 
 bool BackupManager::copyFile(QString sourceFilePath, QString targetFilePath)
 {
-	if( QFile(targetFilePath).exists() ) {
+	if(QFile(targetFilePath).exists()) {
 		const QFileInfo origTargetFileInfo(targetFilePath);
-		const QString newFilePath = QString("%1.orig.%2").arg( origTargetFileInfo.completeBaseName(), origTargetFileInfo.suffix() );//targetFilePath + ".orig." + currentTimeFileSuffix_;
+		const QString newFileName = QString("%1.orig.%2").arg( origTargetFileInfo.completeBaseName(), origTargetFileInfo.suffix());//targetFilePath + ".orig." + currentTimeFileSuffix_;
+		const QString newFilePath = origTargetFileInfo.dir().absoluteFilePath(newFileName);
 
-		emit logWarning(tr("Soubor '%1' již existuje, stará verze bude přejmenována na '%2'.").arg(targetFilePath, newFilePath));
+		emit logWarning(tr("Soubor '%1' již existuje, stará verze bude přejmenována na '%2'.").arg(targetFilePath, newFileName));
 
-		if( !QFile(targetFilePath).rename(newFilePath) ) {
-			emit logError(tr("Nepodařilo se smazat soubor '%1', který překážel záloze!").arg(targetFilePath));
+		if(QFile(newFilePath).exists() && !QFile(newFilePath).remove()) {
+			emit logError(tr("Nepodařilo se smazat soubor '%1', který překážel záloze!").arg(newFilePath));
+			return false;
+		}
+
+		if(!QFile(targetFilePath).rename(newFilePath)) {
+			emit logError(tr("Nepodařilo se přejmenovat soubor '%1' na '%2', který překážel záloze!").arg(targetFilePath, newFileName));
 			return false;
 		}
 	}
